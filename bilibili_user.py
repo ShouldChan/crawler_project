@@ -105,6 +105,7 @@ for m in range(1691,2000): #26 ,1000
                     cur = conn.cursor()
                     # cur.execute('create database if not exists python')
                     conn.select_db('bilibili')
+
                     cur.execute('INSERT INTO bilibili_user_info VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                                 [mid, mid, name, sex, face, coins, regtime_format, spacesta, birthday, place, description,
                                  article, fans, friend, attention, sign, str(attentions), level, exp])
