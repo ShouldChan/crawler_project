@@ -149,7 +149,7 @@ def getData(baseurl):
             inq = re.findall(findInq, item)
             # 可能没有概况
             if len(inq) != 0:
-                inq = inq[0].replace("。", "")  # 去掉句号
+                inq = inq[0].replace("。", " ")  # 去掉句号
                 data.append(inq)  # 添加概况
             else:
                 data.append(' ')  # 留空
