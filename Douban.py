@@ -185,6 +185,13 @@ def saveData(datalist, savepath):
     book.save(savepath)  # 保存
 
 
+def saveTxt(datalist, savepath):
+    fwrite = open(savepath, 'wb')
+    for each_line in datalist:
+        print each_line
+    fwrite.close()
+
+
 def main():
     print sys.getdefaultencoding()
     t0 = time.time()
@@ -192,8 +199,10 @@ def main():
     datalist = getData(baseurl)
     # t1 = time.time() - t0
     print 'crawl elapsed: ', time.time() - t0
-    savapath = u'douban_Top250.xlsx'
-    # saveData(datalist,savapath)
+    # savapath = u'douban_Top250.xlsx'
+    savepath = u'douban_Top250.txt'
+    # saveData(datalist,savepath)
+    saveTxt(datalist, savepath)
 
 
 main()
