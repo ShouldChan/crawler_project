@@ -166,7 +166,7 @@ def getData(baseurl):
             if (len(data) != 12):
                 data.insert(8, ' ')  # 留空
             datalist.append(data)
-    print datalist
+    # print datalist
     return datalist
 
 
@@ -188,6 +188,10 @@ def saveData(datalist, savepath):
 def saveTxt(datalist, savepath):
     fwrite = open(savepath, 'wb')
     for each_line in datalist:
+        for each_item in each_line:
+            fwrite.write(each_item + '\t')
+            # print each_item
+        fwrite.write('\n')
         print each_line
     fwrite.close()
 
