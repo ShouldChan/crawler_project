@@ -13,11 +13,16 @@ t = time.time()
 
 # download the posters from the dataset
 # crawl the movie homepage from the crawled dataset
-def readHomepage():
-    with open('./douban_Top250.txt','rb') as fread_hg:
-        lines =fread_hg.readlines()
+def readHomepage(hg_list):
+    with open('./douban_Top250.txt', 'rb') as fread_hg:
+        lines = fread_hg.readlines()
         for line in lines:
-            tempData=line.strip().split('\t')
+            tempData = line.strip().split('\t')
+            hg_url = tempData[0]
+            hg_list.append(hg_url)
+    print hg_list
+
+
 def downloadPic(pic_list):
     x = 0
     fwrite_timeout = open(pic_dir + 'timeout_list.txt', 'ab')
@@ -54,9 +59,12 @@ def readPicUrl(pic_list):
 
 def main():
     pic_list = []
-    readPicUrl(pic_list)
-    print '-------readUrl over-------'
-    downloadPic(pic_list)
+    hg_list = []
+    readHomepage(hg_list)
+    print '-------readHomepageUrl over-------'
+    # readPicUrl(pic_list)
+    print '-------readPicUrl over-------'
+    # downloadPic(pic_list)
     print '-------downloadPic over------'
 
 
