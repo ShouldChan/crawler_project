@@ -5,9 +5,11 @@ import time
 import sys
 import urllib2
 import re
+from bs4 import BeautifulSoup
 
 reload(sys)
 sys.setdefaultencoding('utf8')
+
 pic_dir = './posters/'
 
 t = time.time()
@@ -42,7 +44,12 @@ def askURL(url):
 
 def getPosterId(base_url):
     find_pId = re.compile(r'<li data-id="(.*?)">')  # get posterID
-    print find_pId
+    # print find_pId
+    for i in range(0, 10):
+        html = askURL(base_url)
+        soup = BeautifulSoup(html, 'lxml')
+        for item in soup.findall('div',class_='item'):
+            data =[]
 
 
 def downloadPic(pic_list):
