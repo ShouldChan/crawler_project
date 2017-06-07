@@ -3,6 +3,8 @@
 import requests
 import time
 import sys
+import urllib2
+import re
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -21,6 +23,26 @@ def readHomepage(hg_list):
             hg_url = tempData[0]
             hg_list.append(hg_url)
     print hg_list
+
+
+# 得到页面全部内容
+def askURL(url):
+    request = urllib2.Request(url)  # 发送请求
+    try:
+        response = urllib2.urlopen(request)  # 取得响应
+        html = response.read()  # 获取网页内容
+        # print html
+    except urllib2.URLError, e:
+        if hasattr(e, "code"):
+            print e.code
+        if hasattr(e, "reason"):
+            print e.reason
+    return html
+
+
+def getPosterId(base_url):
+    find_pId = re.compile(r'<li data-id="(.*?)">')  # get posterID
+    print find_pId
 
 
 def downloadPic(pic_list):
@@ -58,9 +80,12 @@ def readPicUrl(pic_list):
 
 
 def main():
+    base_img = 'https://img3.doubanio.com/view/photo/raw/public/p'
     pic_list = []
     hg_list = []
-    readHomepage(hg_list)
+    test_hg = 'https://movie.douban.com/subject/1292262/'
+    getPosterId(test_hg)
+    # readHomepage(hg_list)
     print '-------readHomepageUrl over-------'
     # readPicUrl(pic_list)
     print '-------readPicUrl over-------'
