@@ -48,8 +48,8 @@ def getPosterId(base_url):
     for i in range(0, 10):
         html = askURL(base_url)
         soup = BeautifulSoup(html, 'lxml')
-        for item in soup.findall('div',class_='item'):
-            data =[]
+        for item in soup.findall('div', class_='item'):
+            data = []
 
 
 def downloadPic(pic_list):
