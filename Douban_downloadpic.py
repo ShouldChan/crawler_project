@@ -43,54 +43,61 @@ def getPID(hg_list, pid_list):
             item = str(item)
             pid = re.findall(find_pid, item)[0]
             pid_list.append(pid)
-            # print pid
+            print pid
     print pid_list
 
 
 # def savePosterDownloadUrl_txt()
 
 
-def downloadPic():
-    # piccontent = urllib2.urlopen('https://img3.doubanio.com/view/photo/raw/public/p480747492.jpg').read()
-    urllib.urlretrieve('https://movie.douban.com/photos/photo/480747492/', './1.jpg')
-    # fwrite_pic = open(pic_dir + '1.jpg', 'wb')
-    # fwrite_pic.write(piccontent)
-    # fwrite_pic.close()
+def downloadPic(pid_list):
+    x = 0
+    print 'walk into the loop...'
+    for each_pid in pid_list:
+        x += 1
+        print x
+        down_url = 'https://img3.doubanio.com/view/photo/photo/public/p' + str(each_pid) + '.webp'
+        save_pic = './posters/' + str(x) + '.jpg'
+        urllib.urlretrieve(down_url, save_pic)
+    print 'walk out of the loop...'
+        # fwrite_pic = open(pic_dir + '1.webp', 'wb')
+        # fwrite_pic.write(piccontent)
+        # fwrite_pic.close()
 
-    # fwrite_timeout = open(pic_dir + 'timeout_list.txt', 'ab')
-    # try:
-    #     rq = requests.get('https://img3.doubanio.com/view/photo/raw/public/p480747492.jpg', timeout=120)
-    # except requests.exceptions.ConnectionError:
-    #     print 'md!download time out!Mark this and try again...'
-    #     fwrite_timeout.write(str(1) + '\n')
-    #     print '----------------------------------------------------'
-    # finally:
-    #     filePath_pic = pic_dir + '1.jpg'
-    #
-    #     fwrite_pic = open(filePath_pic, 'wb')
-    #     fwrite_pic.write(rq.content)
-    #     fwrite_pic.close()
-    # fwrite_timeout.close()
-    # x = 0
-    # fwrite_timeout = open(pic_dir + 'timeout_list.txt', 'ab')
-    # for pic_url in pic_list:
-    #     x += 1
-    #     print x
-    #     filePath_txt = pic_dir + '%s.txt' % x
-    #     print pic_url
-    #     try:
-    #         rq = requests.get(pic_url, timeout=120)
-    #     except requests.exceptions.ConnectionError:
-    #         print 'md!download time out!Mark this and try again...'
-    #         fwrite_timeout.write(str(x) + '\t' + str(pic_url) + '\n')
-    #         print '----------------------------------------------------'
-    #         continue
-    #     filePath_pic = pic_dir + '%s.jpg' % x
-    #
-    #     fwrite_pic = open(filePath_pic, 'wb')
-    #     fwrite_pic.write(rq.content)
-    #     print time.time() - t
-    #     print '==========================='
+        # fwrite_timeout = open(pic_dir + 'timeout_list.txt', 'ab')
+        # try:
+        #     rq = requests.get('https://img3.doubanio.com/view/photo/raw/public/p480747492.jpg', timeout=120)
+        # except requests.exceptions.ConnectionError:
+        #     print 'md!download time out!Mark this and try again...'
+        #     fwrite_timeout.write(str(1) + '\n')
+        #     print '----------------------------------------------------'
+        # finally:
+        #     filePath_pic = pic_dir + '1.jpg'
+        #
+        #     fwrite_pic = open(filePath_pic, 'wb')
+        #     fwrite_pic.write(rq.content)
+        #     fwrite_pic.close()
+        # fwrite_timeout.close()
+        # x = 0
+        # fwrite_timeout = open(pic_dir + 'timeout_list.txt', 'ab')
+        # for pic_url in pic_list:
+        #     x += 1
+        #     print x
+        #     filePath_txt = pic_dir + '%s.txt' % x
+        #     print pic_url
+        #     try:
+        #         rq = requests.get(pic_url, timeout=120)
+        #     except requests.exceptions.ConnectionError:
+        #         print 'md!download time out!Mark this and try again...'
+        #         fwrite_timeout.write(str(x) + '\t' + str(pic_url) + '\n')
+        #         print '----------------------------------------------------'
+        #         continue
+        #     filePath_pic = pic_dir + '%s.jpg' % x
+        #
+        #     fwrite_pic = open(filePath_pic, 'wb')
+        #     fwrite_pic.write(rq.content)
+        #     print time.time() - t
+        #     print '==========================='
 
 
 # 读取下载数据集里面的第二列poster缩略图的下载链接（已经不用缩略图了 不够清晰）
@@ -103,6 +110,7 @@ def readPicUrl(pic_list):
             pic_url = tempData[1]
             print pic_url
             pic_list.append(pic_url)
+
 
 # 模拟登陆豆瓣
 # def modelLogin():
@@ -117,13 +125,11 @@ def main():
     readHomepage(hg_list)
     print '-------readHomepageUrl over-------\t' + str(time.time() - t)
 
-    getPID(hg_list,pid_list)
+    getPID(hg_list, pid_list)
     print '-------getPID over-------\t' + str(time.time() - t)
 
-    downloadPic()
+    downloadPic(pid_list)
     print '-------downloadPic over------\t' + str(time.time() - t)
-
-
 
 
 main()
