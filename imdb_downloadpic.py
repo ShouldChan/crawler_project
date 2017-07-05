@@ -36,11 +36,11 @@ def read_save_imdb():
 def get_picurl():
     x = 0
     picurl_list = []
-    find_url = re.compile(r'<img alt="(.*?)">')  # get picurl
+    find_url = re.compile(r'<img src="(.*?)">')  # get picurl
     with open(pic_dir + 'jpg_description.txt', 'rb') as readfile:
         lines = readfile.readlines()
         for line in lines:
-            link_url = line[2]
+            link_url = line.strip().split('\t')[0]
             print link_url
             r = requests.get(link_url)
             content = r.content.decode('utf8')
@@ -50,8 +50,10 @@ def get_picurl():
 
             for item in soup.find_all('div', class_='poster'):
                 item = str(item)
-                picurl = re.fingdall(find_url, item)[0]
+                print item
+                picurl = re.findall(find_url, item)
                 picurl_list.append(picurl)
                 print str(picurl) + '\t' + str(x)
+
 
 get_picurl()
