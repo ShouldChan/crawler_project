@@ -14,6 +14,7 @@ def read_imdbId():
     imdbId_list = df['imdbId']
     print imdbId_list
     print type(imdbId_list)
+    # print imdbId_list[0]
     imdb = df.imdbId.unique()
     print imdb
     n_imdbId = imdb.shape[0]
