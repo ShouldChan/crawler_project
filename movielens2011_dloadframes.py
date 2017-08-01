@@ -3,6 +3,8 @@ pic_dir = './movielens2011_frames/'
 mv_dir = './movielens2011/'
 basis_font = 'http://www.imdb.com/title/tt'
 basis_back = '/mediaindex?refine=still_frame&ref_=ttmi_ref_sf'
+# http://www.imdb.com/title/tt0107566/mediaindex?refine=still_frame&ref_=ttmi_ref_sf
+
 
 import pandas as pd
 import re
@@ -28,6 +30,17 @@ def read_imdbId():
 
 
 # read_imdbId()
+def read_movieId_need():
+    ID_list = []
+    with open(mv_dir + 'movie_ID_Jpg_269.txt', 'rb') as fopen:
+        lines = fopen.readlines()
+        for line in lines:
+            temp = line.strip().split('\t')
+            id = temp[0]
+            ID_list.append(id)
+    # print ID_list
+    print len(ID_list)
+    return ID_list
 
 
 # 得到全部的页面内容
@@ -45,25 +58,11 @@ def askURL(url):
     return html
 
 
-# 1、os.path.exists(path) 判断一个目录是否存在
-# 2、os.makedirs(path) 多层创建目录
-# 3、os.mkdir(path) 创建目录
-
-def extract_posters(dic):
+def extract_posters(dic, ID_list):
     findImgSrc = re.compile(r'<img.*src="(.*jpg)"', re.S)  # 找到影片图片
-    count = 0
-    ID_list = []
-    with open(mv_dir + 'movie_ID_Jpg.txt', 'rb') as fopen:
-        lines = fopen.readlines()
-        for line in lines:
-            temp = line.strip().split('\t')
-            id = temp[0]
-            ID_list.append(id)
-    # print ID_list
-    print len(ID_list)
-    # print dic[str(2)]
+    count = 3109
     for i in ID_list:
-        print '-----', i
+        print '-----', i, str(dic[str(i)])
         url = basis_font + str(dic[str(i)]) + basis_back
         html = askURL(url)
         soup = BeautifulSoup(html, 'lxml')
@@ -88,5 +87,6 @@ def extract_posters(dic):
 if __name__ == '__main__':
     t = time.time()
     dic = read_imdbId()
-    extract_posters(dic)
+    ID_list = read_movieId_need()
+    extract_posters(dic, ID_list)
     print time.time() - t
