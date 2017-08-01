@@ -52,19 +52,25 @@ def askURL(url):
 # 3、os.mkdir(path) 创建目录
 
 def extract_posters(imdbId_series, movieId_series, n_imdbId):
-    findImgSrc = re.compile(r'<img.*src="(.*jpg)">', re.S)
+    findImgSrc = re.compile(r'<img.*src="(.*jpg)"', re.S)  # 找到影片图片
     count = 0
     for i in range(1, n_imdbId + 1):
         print imdbId_series[i], movieId_series[i]
         url = basis_font + str(imdbId_series[i]) + basis_back
         html = askURL(url)
-        soup = BeautifulSoup(html, 'lsml')
+        soup = BeautifulSoup(html, 'lxml')
+        # for item in soup.find_all('div', class_='media_index_thumb_list'):
         path = pic_dir + str(imdbId_series[i]) + '/'
         if os.path.exists(path) != True:
             os.mkdir(path)
         for item in soup.find_all('img', height='100'):
             item = str(item)
+            # print item
+            # img_list = soup.select('.media_index_thumb_list')
+            # print img_list
             imgSrc = re.findall(findImgSrc, item)[0]
+            # print imgSrc
+            # print type(imgSrc)
             count += 1
             print count
             save_pic = path + str(count) + '.jpg'
