@@ -62,8 +62,6 @@ def extract_posters(imdbid_series, movieid_series, n_imdbid):
     # findLink = re.compile(r'<a href="(.*?)">')  # 找到影片详情链接
     findImgSrc = re.compile(r'<img.*src="(.*jpg)"', re.S)  # 找到影片图片
     # findTitle = re.compile(r'<span class="title">(.*)</span>')  # 找到片名
-    # 去掉无关内容
-    # remove = re.compile(r'                            |\n|</br>|\.*')
     count = 0
     for i in range(1, n_imdbid + 1):
         print imdbid_series[i], movieid_series[i]
