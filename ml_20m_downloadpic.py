@@ -78,9 +78,10 @@ def extract_posters(imdbid_series, movieid_series, n_imdbid):
             # img_list = soup.select('.media_index_thumb_list')
             # print img_list
             imgSrc = re.findall(findImgSrc, item)[0]
-            print imgSrc
-            print type(imgSrc)
+            # print imgSrc
+            # print type(imgSrc)
             count += 1
+            print count
             save_pic = path + str(count) + '.jpg'
             urllib.urlretrieve(imgSrc, save_pic)
     print 'asdasd'
