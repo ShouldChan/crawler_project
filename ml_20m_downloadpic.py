@@ -64,17 +64,26 @@ def extract_posters(imdbid_series, movieid_series, n_imdbid):
     # findTitle = re.compile(r'<span class="title">(.*)</span>')  # 找到片名
     # 去掉无关内容
     # remove = re.compile(r'                            |\n|</br>|\.*')
+    count = 0
     for i in range(1, n_imdbid + 1):
         print imdbid_series[i], movieid_series[i]
         url = basis_font + str(imdbid_series[i]) + basis_back
         html = askURL(url)
         soup = BeautifulSoup(html, 'lxml')
-        for item in soup.find_all('div', class_='media_index_thumb_list'):  # 找到每一个影片项
+        # for item in soup.find_all('div', class_='media_index_thumb_list'):
+        path = pic_dir + str(imdbid_series[i]) + '/'
+        if os.path.exists(path) != True:
+            os.mkdir(path)
+        for item in soup.find_all('img', height='100'):
             item = str(item)
-            print item
+            # print item
+            # img_list = soup.select('.media_index_thumb_list')
+            # print img_list
             imgSrc = re.findall(findImgSrc, item)[0]
             print imgSrc
-            save_pic = pic_dir + str(imdbid_series[i]) + '.jpg'
+            print type(imgSrc)
+            count += 1
+            save_pic = path + str(count) + '.jpg'
             urllib.urlretrieve(imgSrc, save_pic)
     print 'asdasd'
 
