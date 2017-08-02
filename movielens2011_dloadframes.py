@@ -32,7 +32,7 @@ def read_imdbId():
 # read_imdbId()
 def read_movieId_need():
     ID_list = []
-    with open(mv_dir + 'movie_ID_Jpg_269.txt', 'rb') as fopen:
+    with open(mv_dir + 'movie_ID_Jpg_4740.txt', 'rb') as fopen:
         lines = fopen.readlines()
         for line in lines:
             temp = line.strip().split('\t')
@@ -60,7 +60,7 @@ def askURL(url):
 
 def extract_posters(dic, ID_list):
     findImgSrc = re.compile(r'<img.*src="(.*jpg)"', re.S)  # 找到影片图片
-    count = 3109
+    count = 52895
     for i in ID_list:
         print '-----', i, str(dic[str(i)])
         url = basis_font + str(dic[str(i)]) + basis_back
