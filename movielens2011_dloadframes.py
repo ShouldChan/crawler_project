@@ -3,7 +3,7 @@ pic_dir = './movielens2011_frames/'
 mv_dir = './movielens2011/'
 basis_font = 'http://www.imdb.com/title/tt'
 basis_back = '/mediaindex?refine=still_frame&ref_=ttmi_ref_sf'
-# http://www.imdb.com/title/tt0107566/mediaindex?refine=still_frame&ref_=ttmi_ref_sf
+# http://www.imdb.com/title/tt0373389/mediaindex?refine=still_frame&ref_=ttmi_ref_sf
 
 
 import pandas as pd
@@ -32,7 +32,7 @@ def read_imdbId():
 # read_imdbId()
 def read_movieId_need():
     ID_list = []
-    with open(mv_dir + 'movie_ID_Jpg_4740.txt', 'rb') as fopen:
+    with open(mv_dir + 'movie_ID_Jpg_8865.txt', 'rb') as fopen:
         lines = fopen.readlines()
         for line in lines:
             temp = line.strip().split('\t')
@@ -60,7 +60,7 @@ def askURL(url):
 
 def extract_posters(dic, ID_list):
     findImgSrc = re.compile(r'<img.*src="(.*jpg)"', re.S)  # 找到影片图片
-    count = 52895
+    count = 87154
     for i in ID_list:
         print '-----', i, str(dic[str(i)])
         url = basis_font + str(dic[str(i)]) + basis_back
