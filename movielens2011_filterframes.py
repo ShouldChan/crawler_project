@@ -48,6 +48,13 @@ def traverse_folder(dic, Id_list):
                     print '--------------this folder is empty--------------'
                 else:
                     fwrite.write(str(i) + '\t' + str(dic[str(i)]) + '\n')
+                    # 将这个文件夹下无效的图片剔除
+                    for j in files:
+                        jpg_path = path + str(j)
+                        fsize = os.path.getsize(jpg_path)
+                        if fsize == 0:
+                            os.remove(jpg_path)
+                            print 'remove already...'
                     print files
         print i, dic[str(i)]
     print 'traverse over...'
