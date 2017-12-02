@@ -18,10 +18,18 @@ timeout_path = "./timeout_list.txt"
 group_set = set()
 
 
-def askURL(url):
+def askURL(url, host_name):
+    # 解决HTTP Error 403: Forbidden
+    # 伪装成浏览器
+    # host_name = str(host_name).lower()
+    headers = {
+        # 'Host': host_name + '.deviantart.com',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
+    }
     # 发送请求
     html = ""
-    request = urllib2.Request(url)
+    request = urllib2.Request(url, headers=headers)
+    # request = urllib2.Request(url)
     try:
         # 取得响应
         response = urllib2.urlopen(request)
@@ -66,15 +74,16 @@ def downloadGpusers():
             每一页存有100个用户，不满一百的就是单独一页
             三个strong分别对应：members, pageviews, watchers
             '''
-            group_url = "https://" + str(group).lower() + ".deviantart.com/"
-            try:
-                rq = requests.get(group_url, timeout=60)
-            except requests.exceptions.ConnectionError:
-                print("======MD!TIME OUT!======")
-                fw_timeout.write(str(group) + '\n')
-                continue
+            group_url = "https://" + str(group).lower() + ".deviantart.com"
+            print(group_url)
+            # try:
+            #     rq = requests.get(group_url, timeout=60)
+            # except requests.exceptions.ConnectionError:
+            #     print("======MD!TIME OUT!======")
+            #     fw_timeout.write(str(group) + '\n')
+            #     continue
 
-            group_html = askURL(group_url)
+            group_html = askURL(group_url, group)
             if not group_html:
                 continue
             group_soup = BeautifulSoup(group_html, "lxml")
@@ -95,14 +104,15 @@ def downloadGpusers():
                 print offset
 
                 users_url = "https://" + str(group).lower() + ".deviantart.com/modals/memberlist/?offset=" + str(offset)
-                try:
-                    rq = requests.get(users_url, timeout=90)
-                except requests.exceptions.ConnectionError:
-                    print("======MD!TIME OUT!======")
-                    fw_timeout.write(str(group) + '\t' + str(offset) + '\n')
-                    continue
+                print(users_url)
+                # try:
+                #     rq = requests.get(users_url, timeout=90)
+                # except requests.exceptions.ConnectionError:
+                #     print("======MD!TIME OUT!======")
+                #     fw_timeout.write(str(group) + '\t' + str(offset) + '\n')
+                #     continue
 
-                users_html = askURL(users_url)
+                users_html = askURL(users_url, group)
                 if not users_html:
                     continue
 
