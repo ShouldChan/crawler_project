@@ -7,15 +7,17 @@ from bs4 import BeautifulSoup
 import re
 import httplib
 
-httplib.HTTPConnection._http_vsn = 10
-httplib.HTTPConnection._http_vsn_str = 'HTTP/1.0'
+# 错误代码的设置 在访问
+# httplib.HTTPConnection._http_vsn = 10
+# httplib.HTTPConnection._http_vsn_str = 'HTTP/1.0'
 
 save_path = "./gpusers.txt"
-group_path = "./groups_full.txt"
-group_save_path = "./groups_nums.txt"
-timeout_path = "./timeout_list.txt"
+group_path = "./groups_filter_20171202.txt"
+group_save_path = "./groups_filter_nums_20171203.txt"
+group_timeout_path = "./group_timeout_list_20171203.txt"
+user_timeout_path = "./group_timeout_list_20171203.txt"
 
-group_set = set()
+# group_set = set()
 
 
 def askURL(url, host_name):
@@ -23,7 +25,7 @@ def askURL(url, host_name):
     # 伪装成浏览器
     # host_name = str(host_name).lower()
     headers = {
-        # 'Host': host_name + '.deviantart.com',
+        'Host': host_name + '.deviantart.com',
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
     }
     # 发送请求
@@ -37,7 +39,7 @@ def askURL(url, host_name):
         html = response.read()
         # print(html)
     except urllib2.URLError, e:
-        print(e)
+        # print(e)
 
         if hasattr(e, "code"):
             print(e.code)
@@ -48,22 +50,23 @@ def askURL(url, host_name):
 
 
 def read_groupname():
+    group_set=set()
     with open(group_path, 'r') as fr:
         lines = fr.readlines()
         for line in lines:
             group = line.strip()
             # print(group)
             group_set.add(group)
+    return group_set
 
 
-# read_groupname()
-# print(len(group_set))
 
 def downloadGpusers():
     t = time.time()
-
+    group_set=read_groupname()
     # group = "coldmirror-FanClub"
-    fw_timeout = open(timeout_path, 'w')
+    fw_group_timeout = open(group_timeout_path, 'w')
+    fw_user_timeout=open(user_timeout_path, 'w')
     fw_group = open(group_save_path, 'w')
     with open(save_path, 'w') as fw:
         for group in group_set:
@@ -85,6 +88,7 @@ def downloadGpusers():
 
             group_html = askURL(group_url, group)
             if not group_html:
+                fw_group_timeout.write(str(group)+'\t'+str(group_url)+'\n')
                 continue
             group_soup = BeautifulSoup(group_html, "lxml")
 
@@ -106,7 +110,7 @@ def downloadGpusers():
                 users_url = "https://" + str(group).lower() + ".deviantart.com/modals/memberlist/?offset=" + str(offset)
                 print(users_url)
                 # try:
-                #     rq = requests.get(users_url, timeout=90)
+                #     rq = requests.get(users_url, timeout=60)
                 # except requests.exceptions.ConnectionError:
                 #     print("======MD!TIME OUT!======")
                 #     fw_timeout.write(str(group) + '\t' + str(offset) + '\n')
@@ -114,6 +118,7 @@ def downloadGpusers():
 
                 users_html = askURL(users_url, group)
                 if not users_html:
+                    fw_user_timeout.write(str(group)+'\t'+str(offset)+'\t'+str(users_url)+'\n')
                     continue
 
                 soup = BeautifulSoup(users_html, "lxml")
@@ -131,9 +136,29 @@ def downloadGpusers():
                     count += 1
                 print time.time() - t
     fw_group.close()
-    fw_timeout.close()
+    fw_group_timeout.close()
+    fw_user_timeout.close()
 
 
-read_groupname()
-print(len(group_set))
+def test_download():
+    group_set=read_groupname()
+    for group in group_set:
+        print("group name:%s"%group)
+        group_url = "https://" + str(group).lower() + ".deviantart.com"
+        print(group_url)
+        group_html = askURL(group_url, group)
+        group_soup = BeautifulSoup(group_html, "lxml")
+        item_list = group_soup.find_all("span", class_="tighttt")
+        item_contents = item_list[0].contents[0].contents
+        item_str = str(item_contents)
+        item_str = item_str[3:-3]
+        if ',' in item_str:
+            item_str = item_str.replace(',', '')
+
+        n_gpusers = int(item_str)
+        print("nums of user: %d" % n_gpusers)
+        print("all the pages: %d" % (int(n_gpusers / 100) + 1))
+
+# test_download()
+# downloadGpusers()
 downloadGpusers()
