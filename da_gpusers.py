@@ -1,11 +1,8 @@
 # coding:utf-8
-import requests
 import time
-import urllib
 import urllib2
+
 from bs4 import BeautifulSoup
-import re
-import httplib
 
 # 错误代码的设置 在访问
 # httplib.HTTPConnection._http_vsn = 10
@@ -16,6 +13,9 @@ group_path = "./groups_filter_20171202.txt"
 group_save_path = "./groups_filter_nums_20171203.txt"
 group_timeout_path = "./group_timeout_list_20171203.txt"
 user_timeout_path = "./group_timeout_list_20171203.txt"
+# 遇到中途出现异常错误而停止的问题 直接保存group name 并且 保存已爬下的group name
+have_crawled_group_path="./have_crawled_group_20171203.txt"
+
 
 # group_set = set()
 
@@ -56,21 +56,37 @@ def read_groupname():
         for line in lines:
             group = line.strip()
             # print(group)
-            group_set.add(group)
+            group_set.add(group.lower())
     return group_set
 
-
+def read_crawled_groupname():
+    group_crawled_set=set()
+    with open(have_crawled_group_path,'r') as fr:
+        lines =fr.readlines()
+        for line in lines:
+            group=line.strip()
+            group_crawled_set.add(group)
+    return group_crawled_set
 
 def downloadGpusers():
     t = time.time()
     group_set=read_groupname()
-    # group = "coldmirror-FanClub"
-    fw_group_timeout = open(group_timeout_path, 'w')
-    fw_user_timeout=open(user_timeout_path, 'w')
-    fw_group = open(group_save_path, 'w')
-    with open(save_path, 'w') as fw:
-        for group in group_set:
-            print("---------Group Name: %s----------" % group.lower())
+    # 读取已爬取的groupname 得到未爬取的组
+    group_crawled_set=read_crawled_groupname()
+    group_not_crawed_set= group_set-group_crawled_set
+
+    print("Total groups: %d"%len(group_set))
+    print("Have crawled groups: %d"%len(group_crawled_set))
+    print("Need to crawl groups: %d"%len(group_not_crawed_set))
+
+    fw_group_timeout = open(group_timeout_path, 'a+')
+    fw_user_timeout=open(user_timeout_path, 'a+')
+    fw_group = open(group_save_path, 'a+')
+    fw_crawled=open(have_crawled_group_path, 'a+')
+
+    with open(save_path, 'a+') as fw:
+        for group in group_not_crawed_set:
+            print("---------Group Name: %s----------" % group)
 
             '''
             因为用户列表分页的原因，首先获取group用户的个数  <span class="tighttt"><strong>299 </strong> Members<br></span>
@@ -92,8 +108,12 @@ def downloadGpusers():
                 continue
             group_soup = BeautifulSoup(group_html, "lxml")
 
-            item_list = group_soup.find_all("span", class_="tighttt")
-            item_contents = item_list[0].contents[0].contents
+            try:
+                item_list = group_soup.find_all("span", class_="tighttt")
+                item_contents = item_list[0].contents[0].contents
+            except:
+                fw_group_timeout.write("GROUP!!!Catch Error\t"+str(group)+'\n')
+                continue
             item_str = str(item_contents)
             item_str = item_str[3:-3]
             if ',' in item_str:
@@ -125,19 +145,24 @@ def downloadGpusers():
 
                 print("----------------------Page. %d-------------------------" % (offset / 100 + 1))
                 count = 0
-                for item in soup.find_all('a', class_="u regular username"):
-                    item_contents = item.contents
-                    # inside_contents=item_contents.contents
-                    item_str = str(item_contents)
-                    # [u'groupname']
-                    item_str = item_str[3:-2]
-                    fw.write(str(item_str) + '\t' + str(group) + '\n')
-                    # print item_str, count
-                    count += 1
+
+                try:
+                    for item in soup.find_all('a', class_="u regular username"):
+                        item_contents = item.contents
+                        item_str = str(item_contents)
+                        # [u'groupname']
+                        item_str = item_str[3:-2]
+                        fw.write(str(item_str) + '\t' + str(group) + '\n')
+                        # print item_str, count
+                        count += 1
+                except:
+                    fw_user_timeout.write("USER!!!Catch Error\t"+str(group)+'\t'+str(offset)+'\n')
+                    continue
                 print time.time() - t
     fw_group.close()
     fw_group_timeout.close()
     fw_user_timeout.close()
+    fw_crawled.close()
 
 
 def test_download():
