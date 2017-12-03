@@ -104,29 +104,33 @@ def filterGroups():
 
     base_url = "https://groups.deviantart.com/?qh=&q="
     # <div class="search-stats"><h1>Xandriia1</h1> <span>No results</span></div>
-    url = base_url + str("Cuphead-FC")
-    url_2 = base_url + str("Xandriia1")
-    html = askURL(url)
-    html_2 = askURL(url_2)
-    soup_2 = BeautifulSoup(html_2, "lxml")
-    soup = BeautifulSoup(html, "lxml")
-    for item in soup_2.find_all('div', class_="search-stats"):
-        item_contents = item.contents
-        item_str = str(item_contents)
-        print item_str
-        if "No results" in item_str:
-            print "shit"
-            break
-
-    for item in soup.find_all('div', class_="search-stats"):
-        item_contents = item.contents
-        item_str = str(item_contents)
-        print item_str
-        if "No results" in item_str:
-            print "ok"
+    # url = base_url + str("Cuphead-FC")
+    # url_2 = base_url + str("Xandriia1")
+    # html = askURL(url)
+    # html_2 = askURL(url_2)
+    # soup_2 = BeautifulSoup(html_2, "lxml")
+    # soup = BeautifulSoup(html, "lxml")
+    # for item in soup_2.find_all('div', class_="search-stats"):
+    #     item_contents = item.contents
+    #     item_str = str(item_contents)
+    #     print item_str
+    #     if "No results" in item_str:
+    #         print "shit"
+    #         break
 
     for group in group_set:
         url = base_url + str(group)
+        html = askURL(url)
+        soup = BeautifulSoup(html, "lxml")
+        for item in soup.find_all('div', class_="search-stats"):
+            item_contents = item.contents
+            item_str = str(item_contents)
+            # print item_str
+            if "No results" in item_str:
+                print("--------%s---------This is not a GroupName!!!"%group)
+                break
+            print("Yes, they are....%s"%group)
+            fw.write(str(group)+'\n')
 
     fw.close()
 
