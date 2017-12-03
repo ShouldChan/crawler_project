@@ -159,6 +159,7 @@ def downloadGpusers():
                     fw_user_timeout.write("USER!!!Catch Error\t"+str(group)+'\t'+str(offset)+'\n')
                     continue
                 print time.time() - t
+            fw_crawled.write(str(group)+'\n')
     fw_group.close()
     fw_group_timeout.close()
     fw_user_timeout.close()
