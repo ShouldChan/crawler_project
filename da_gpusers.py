@@ -1,6 +1,7 @@
 # coding:utf-8
 import time
 import urllib2
+from contextlib import nested
 
 from bs4 import BeautifulSoup
 
@@ -79,12 +80,12 @@ def downloadGpusers():
     print("Have crawled groups: %d"%len(group_crawled_set))
     print("Need to crawl groups: %d"%len(group_not_crawed_set))
 
-    fw_group_timeout = open(group_timeout_path, 'a+')
-    fw_user_timeout=open(user_timeout_path, 'a+')
-    fw_group = open(group_save_path, 'a+')
-    fw_crawled=open(have_crawled_group_path, 'a+')
+    # fw_group_timeout = open(group_timeout_path, 'a+')
+    # fw_user_timeout=open(user_timeout_path, 'a+')
+    # fw_group = open(group_save_path, 'a+')
+    # fw_crawled=open(have_crawled_group_path, 'a+')
 
-    with open(save_path, 'a+') as fw:
+    with nested(open(save_path, 'a+'),open(group_timeout_path, 'a+'),open(user_timeout_path, 'a+'),open(group_save_path, 'a+'),open(have_crawled_group_path, 'a+')) as (fw,fw_group_timeout,fw_user_timeout,fw_group,fw_crawled):
         for group in group_not_crawed_set:
             print("---------Group Name: %s----------" % group)
 
@@ -147,6 +148,17 @@ def downloadGpusers():
                 count = 0
 
                 try:
+                    # 爬取核心用户
+                    premium_items = soup.find_all('a', class_="u premium username")
+                    if premium_items:
+                        for item in soup.find_all('a', class_="u regular username"):
+                            item_contents = item.contents
+                        item_str = str(item_contents)
+                        # [u'groupname']
+                        item_str = item_str[3:-2]
+                        print(item_str)
+                        fw.write(str(item_str) + '\t' + str(group) + '\n')
+
                     for item in soup.find_all('a', class_="u regular username"):
                         item_contents = item.contents
                         item_str = str(item_contents)
@@ -160,10 +172,10 @@ def downloadGpusers():
                     continue
                 print time.time() - t
             fw_crawled.write(str(group)+'\n')
-    fw_group.close()
-    fw_group_timeout.close()
-    fw_user_timeout.close()
-    fw_crawled.close()
+    # fw_group.close()
+    # fw_group_timeout.close()
+    # fw_user_timeout.close()
+    # fw_crawled.close()
 
 
 def test_download():
