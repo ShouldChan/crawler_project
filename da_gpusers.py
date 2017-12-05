@@ -9,13 +9,13 @@ from bs4 import BeautifulSoup
 # httplib.HTTPConnection._http_vsn = 10
 # httplib.HTTPConnection._http_vsn_str = 'HTTP/1.0'
 
-save_path = "./gpusers.txt"
+save_path = "./gpusers_20171205.txt"
 group_path = "./groups_filter_20171202.txt"
 group_save_path = "./groups_filter_nums_20171203.txt"
 group_timeout_path = "./group_timeout_list_20171203.txt"
 user_timeout_path = "./group_timeout_list_20171203.txt"
 # 遇到中途出现异常错误而停止的问题 直接保存group name 并且 保存已爬下的group name
-have_crawled_group_path="./have_crawled_group_20171203.txt"
+have_crawled_group_path = "./have_crawled_group_20171203.txt"
 
 
 # group_set = set()
@@ -51,7 +51,7 @@ def askURL(url, host_name):
 
 
 def read_groupname():
-    group_set=set()
+    group_set = set()
     with open(group_path, 'r') as fr:
         lines = fr.readlines()
         for line in lines:
@@ -60,32 +60,36 @@ def read_groupname():
             group_set.add(group.lower())
     return group_set
 
+
 def read_crawled_groupname():
-    group_crawled_set=set()
-    with open(have_crawled_group_path,'r') as fr:
-        lines =fr.readlines()
+    group_crawled_set = set()
+    with open(have_crawled_group_path, 'r') as fr:
+        lines = fr.readlines()
         for line in lines:
-            group=line.strip()
+            group = line.strip()
             group_crawled_set.add(group)
     return group_crawled_set
 
+
 def downloadGpusers():
     t = time.time()
-    group_set=read_groupname()
+    group_set = read_groupname()
     # 读取已爬取的groupname 得到未爬取的组
-    group_crawled_set=read_crawled_groupname()
-    group_not_crawed_set= group_set-group_crawled_set
+    group_crawled_set = read_crawled_groupname()
+    group_not_crawed_set = group_set - group_crawled_set
 
-    print("Total groups: %d"%len(group_set))
-    print("Have crawled groups: %d"%len(group_crawled_set))
-    print("Need to crawl groups: %d"%len(group_not_crawed_set))
+    print("Total groups: %d" % len(group_set))
+    print("Have crawled groups: %d" % len(group_crawled_set))
+    print("Need to crawl groups: %d" % len(group_not_crawed_set))
 
     # fw_group_timeout = open(group_timeout_path, 'a+')
     # fw_user_timeout=open(user_timeout_path, 'a+')
     # fw_group = open(group_save_path, 'a+')
     # fw_crawled=open(have_crawled_group_path, 'a+')
 
-    with nested(open(save_path, 'a+'),open(group_timeout_path, 'a+'),open(user_timeout_path, 'a+'),open(group_save_path, 'a+'),open(have_crawled_group_path, 'a+')) as (fw,fw_group_timeout,fw_user_timeout,fw_group,fw_crawled):
+    with nested(open(save_path, 'a+'), open(group_timeout_path, 'a+'), open(user_timeout_path, 'a+'),
+                open(group_save_path, 'a+'), open(have_crawled_group_path, 'a+')) as (
+    fw, fw_group_timeout, fw_user_timeout, fw_group, fw_crawled):
         for group in group_not_crawed_set:
             print("---------Group Name: %s----------" % group)
 
@@ -105,7 +109,8 @@ def downloadGpusers():
 
             group_html = askURL(group_url, group)
             if not group_html:
-                fw_group_timeout.write(str(group)+'\t'+str(group_url)+'\n')
+                fw_group_timeout.write(str(group) + '\t' + str(group_url) + '\n')
+                fw_group_timeout.flush()
                 continue
             group_soup = BeautifulSoup(group_html, "lxml")
 
@@ -113,7 +118,8 @@ def downloadGpusers():
                 item_list = group_soup.find_all("span", class_="tighttt")
                 item_contents = item_list[0].contents[0].contents
             except:
-                fw_group_timeout.write("GROUP!!!Catch Error\t"+str(group)+'\n')
+                fw_group_timeout.write("GROUP!!!Catch Error\t" + str(group) + '\n')
+                fw_group_timeout.flush()
                 continue
             item_str = str(item_contents)
             item_str = item_str[3:-3]
@@ -122,6 +128,7 @@ def downloadGpusers():
 
             n_gpusers = int(item_str)
             fw_group.write(str(group) + '\t' + str(n_gpusers) + '\n')
+            fw_group.flush()
             print("nums of user: %d" % n_gpusers)
             print("all the pages: %d" % (int(n_gpusers / 100) + 1))
 
@@ -139,7 +146,7 @@ def downloadGpusers():
 
                 users_html = askURL(users_url, group)
                 if not users_html:
-                    fw_user_timeout.write(str(group)+'\t'+str(offset)+'\t'+str(users_url)+'\n')
+                    fw_user_timeout.write(str(group) + '\t' + str(offset) + '\t' + str(users_url) + '\n')
                     continue
 
                 soup = BeautifulSoup(users_html, "lxml")
@@ -153,11 +160,12 @@ def downloadGpusers():
                     if premium_items:
                         for item in soup.find_all('a', class_="u regular username"):
                             item_contents = item.contents
-                        item_str = str(item_contents)
-                        # [u'groupname']
-                        item_str = item_str[3:-2]
-                        print(item_str)
-                        fw.write(str(item_str) + '\t' + str(group) + '\n')
+                            item_str = str(item_contents)
+                            # [u'groupname']
+                            item_str = item_str[3:-2]
+                            print(item_str)
+                            fw.write(str(item_str) + '\t' + str(group) + '\n')
+                            # fw.flush()
 
                     for item in soup.find_all('a', class_="u regular username"):
                         item_contents = item.contents
@@ -165,23 +173,24 @@ def downloadGpusers():
                         # [u'groupname']
                         item_str = item_str[3:-2]
                         fw.write(str(item_str) + '\t' + str(group) + '\n')
+                        # fw.flush()
                         # print item_str, count
                         count += 1
                 except:
-                    fw_user_timeout.write("USER!!!Catch Error\t"+str(group)+'\t'+str(offset)+'\n')
+                    fw_user_timeout.write("USER!!!Catch Error\t" + str(group) + '\t' + str(offset) + '\n')
                     continue
                 print time.time() - t
-            fw_crawled.write(str(group)+'\n')
-    # fw_group.close()
-    # fw_group_timeout.close()
-    # fw_user_timeout.close()
-    # fw_crawled.close()
+            fw_crawled.write(str(group) + '\n')
+            # fw_group.close()
+            # fw_group_timeout.close()
+            # fw_user_timeout.close()
+            # fw_crawled.close()
 
 
 def test_download():
-    group_set=read_groupname()
+    group_set = read_groupname()
     for group in group_set:
-        print("group name:%s"%group)
+        print("group name:%s" % group)
         group_url = "https://" + str(group).lower() + ".deviantart.com"
         print(group_url)
         group_html = askURL(group_url, group)
@@ -196,6 +205,7 @@ def test_download():
         n_gpusers = int(item_str)
         print("nums of user: %d" % n_gpusers)
         print("all the pages: %d" % (int(n_gpusers / 100) + 1))
+
 
 # test_download()
 # downloadGpusers()
