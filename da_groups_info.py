@@ -7,8 +7,10 @@ from bs4 import BeautifulSoup
 import re
 import config
 
-save_path = "./2018_01_14/groups_info_20180114.txt"
+save_path = "./2018_01_14/groups_info_20180115.txt"
 group_path = "./2018_01_14/have_crawled_group_20171203.txt"
+
+
 # group_path = "./2018_01_14/test.txt"
 
 
@@ -48,6 +50,7 @@ def getGroupName():
         print("METHOD: getGroupName\t%d" % len(group_list))
     return group_list
 
+
 # TEST
 # strin = "[[[[dfssaf<strong>890 </strong>,sdafasdfsdaf<strong>221</strong> u' Watchers' <strong>fuck</strong>"
 # datapre = re.compile(r'<strong>(.*?)</strong>')
@@ -55,39 +58,44 @@ def getGroupName():
 # print res
 
 
-def getGroupInfo():
+# 改为边爬边写
+def getwriteGroupInfo():
     groupInfo_list = []
     group_list = getGroupName()
-    for eachGroupName, count in zip(group_list, range(0, len(group_list))):
-        groupHomepageUrl = "https://" + str(eachGroupName) + ".deviantart.com"
-
-        html = askURL(groupHomepageUrl)
-        if not html:
-            continue
-        soup = BeautifulSoup(html, "lxml")
-        print("-------------%d-----------" % count)
-
-        # [u'\n', <span class="tighttt"><strong>310 </strong> Members<br/></span>, <span class="tighttt"><strong>77,216 </strong> Pageviews</span>, <span class="tighttt"><strong>890 </strong> Watchers</span>, u' ']
-
-        for item in soup.find_all('span', class_="tight"):
-            item_contents = item.contents
-            item_str = str(item_contents)
-            data = re.compile(r'<strong>(.*?)</strong>')
-            # print(item_str)
-            res = data.findall(item_str)
-            groupInfo_list.append([eachGroupName, res])
-            print(res)
-    return groupInfo_list
-
-
-def writeGroupInfo():
-    groupInfo_list = getGroupInfo()
     with open(save_path, 'w') as fw:
-        for name, mem_page_wat in groupInfo_list:
-            mem, page, wat = mem_page_wat
+        for eachGroupName, count in zip(group_list, range(0, len(group_list))):
+            groupHomepageUrl = "https://" + str(eachGroupName) + ".deviantart.com"
 
-            fw.write(str(name) + '\t' + str(mem).strip() + '\t' + str(page).strip() + '\t' + str(wat).strip() + '\n')
-    print("=============over==============")
+            html = askURL(groupHomepageUrl)
+            if not html:
+                continue
+            soup = BeautifulSoup(html, "lxml")
+            print("-------------%d-----------" % count)
+
+            # [u'\n', <span class="tighttt"><strong>310 </strong> Members<br/></span>, <span class="tighttt"><strong>77,216 </strong> Pageviews</span>, <span class="tighttt"><strong>890 </strong> Watchers</span>, u' ']
+
+            for item in soup.find_all('span', class_="tight"):
+                item_contents = item.contents
+                item_str = str(item_contents)
+                data = re.compile(r'<strong>(.*?)</strong>')
+                # print(item_str)
+                res = data.findall(item_str)
+                groupInfo_list.append([eachGroupName, res])
+                mem, page, wat = res
+                fw.write(str(eachGroupName) + '\t' + str(mem).strip() + '\t' + str(page).strip() + '\t' + str(wat).strip() + '\n')
+                fw.flush()
+                print(res)
+                # return groupInfo_list
 
 
-writeGroupInfo()
+# def writeGroupInfo():
+#     groupInfo_list = getGroupInfo()
+#     with open(save_path, 'w') as fw:
+#         for name, mem_page_wat in groupInfo_list:
+#             mem, page, wat = mem_page_wat
+#             fw.write(str(name) + '\t' + str(mem).strip() + '\t' + str(page).strip() + '\t' + str(wat).strip() + '\n')
+#             fw.flush()
+#     print("=============over==============")
+
+
+getwriteGroupInfo()
