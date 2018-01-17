@@ -121,7 +121,10 @@ def filterGroups():
                 print count
                 count += 1
             else:
+                fw.write(lines[i])
+                fw.flush()
                 print("--------")
+
 
     fw.close()
 
