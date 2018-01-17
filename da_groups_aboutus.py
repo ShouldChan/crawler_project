@@ -75,8 +75,8 @@ def getFounder():
                 # print(subitem.get("title"))
                 member_list.append(admin)
         if len(member_list) == 0:
-            fw.write(str(eachGroupName)+"\n")
-            fw_not.write(str(eachGroupName)+"\n")
+            fw.write(str(eachGroupName) + "\n")
+            fw_not.write(str(eachGroupName) + "\n")
             fw.flush()
             fw_not.flush()
             print("nothing")
@@ -84,14 +84,14 @@ def getFounder():
             # print(member_list)
             # print("-----")
             # print(len(member_list))
-            fw.write(str(eachGroupName)+"\t")
+            fw.write(str(eachGroupName) + "\t")
             for i in range(0, len(member_list)):
                 if i == len(member_list) - 1:
-                    fw.write(str(member_list[i])+"\n")
+                    fw.write(str(member_list[i]) + "\n")
                     fw.flush()
                     print(member_list[i])
                 else:
-                    fw.write(str(member_list[i])+"\t")
+                    fw.write(str(member_list[i]) + "\t")
                     fw.flush()
                     print(member_list[i])
     fw.close()
@@ -100,6 +100,34 @@ def getFounder():
     print("===========get Founder Over=========")
 
 
+def filterGroups():
+    not_crawled_list = []
+    fw = open("./2018_01_14/group_founders_filter_20180117.txt", 'w')
+    with open(not_founders_save_path, 'r') as fr1:
+        lines = fr1.readlines()
+        for line in lines:
+            temp = line.strip().split('\t')
+            name = temp[0]
+            not_crawled_list.append(name)
+    print(len(not_crawled_list))
+
+    count = 1
+    with open(founders_save_path, 'r') as fr2:
+        lines = fr2.readlines()
+        for i in range(0, len(lines)):
+            temp = lines[i].strip().split('\t')
+            name = temp[0]
+            if name in not_crawled_list:
+                print count
+                count += 1
+            else:
+                print("--------")
+
+    fw.close()
+
+
 if __name__ == '__main__':
     # 1.爬取founder
-    getFounder()
+    # getFounder()
+    # 2.filter not founders
+    filterGroups()
