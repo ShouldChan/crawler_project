@@ -10,6 +10,11 @@ groupInfo_path = "./2018_01_14/groups_info_20180114.txt"
 founders_save_path = "./2018_01_14/group_founders_20180116.txt"
 not_founders_save_path = "./2018_01_14/group_not_founders_20180116.txt"
 
+# 3.
+group_founders_523_path = "./2018_01_14/group_founders_523_20180118.txt"
+gpuser_path = "./2018_01_14/gpusers_20171205.txt"
+user_group_path = "./2018_01_14/user_group_20180118.txt"
+
 
 def askURL(url):
     # 解决HTTP Error 403: Forbidden
@@ -125,7 +130,33 @@ def filterGroups():
                 fw.flush()
                 print("--------")
 
+    fw.close()
 
+
+def extractUser():
+    groupname_list = []
+    fw = open(user_group_path, 'w')
+    with open(group_founders_523_path, 'r') as fr1:
+        lines = fr1.readlines()
+        for line in lines:
+            temp = line.strip().split('\t')
+            name = temp[0]
+            groupname_list.append(name)
+
+    print(len(groupname_list))
+    count = 1
+
+    with open(gpuser_path, 'r') as fr2:
+        lines = fr2.readlines()
+        for line in lines:
+            temp = line.strip().split('\t')
+            username, groupname = temp[0], temp[1]
+            print(line)
+            if groupname in groupname_list:
+                print(count)
+                count += 1
+                fw.write(line)
+                fw.flush()
     fw.close()
 
 
@@ -133,4 +164,7 @@ if __name__ == '__main__':
     # 1.爬取founder
     # getFounder()
     # 2.filter not founders
-    filterGroups()
+    # filterGroups()
+
+    # 3.小部分组数据抽取所需用户和组关系
+    extractUser()
